@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-import AppRoutes from './AppRoutes';
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import ProductList from './pages/ProductList';
+import AddProduct from './pages/AddProduct';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -15,8 +19,7 @@ function App() {
         setProducts(res.data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('Lỗi khi tải dữ liệu sản phẩm:', err);
+      .catch(() => {
         setError(true);
         setLoading(false);
       });
@@ -25,6 +28,19 @@ function App() {
   const handleAddProduct = (newProduct) => {
     setProducts((prev) => [...prev, { ...newProduct, id: Date.now() }]);
   };
-
+return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout loading={loading} error={error} />}>
+          <Route index element={<Home />} />
+          <Route path="products" element={<ProductList products={products} />} />
+          <Route path="products/:id" element={<ProductDetail products={products} />} />
+          <Route path="add" element={<AddProduct onAdd={handleAddProduct} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+ 
 }
+
 export default App;
